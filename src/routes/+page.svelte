@@ -29,6 +29,7 @@
 
     let state = States.camera;
     let picture;
+    let loopCount = 0;
 
     // More API functions here:
     // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
@@ -71,15 +72,28 @@
 
     async function loop() {
         webcam.update(); // update the webcam frame
+    
+        // if (loopCount % 20 === 0) {
+        //     await predict();
+        //     loopCount = 0;
+        // } else {
+        //     loopCount++;
+        // }
         await predict();
         window.requestAnimationFrame(loop);
     }
+
+    let lastPredictions = [];
 
     // run the webcam image through the image model
     async function predict() {
         // predict can take in an image, video or canvas html element
         const prediction = await model.predict(webcam.canvas);
         for (let i = 0; i < maxPredictions; i++) {
+            lastPredictions.push(prediction.find(pred => pred.className.toLowerCase().includes("cancer")).probability);
+            if (lastPredictions.length > 80) {
+                lastPredictions.shift();
+            }
             const classPrediction =
                 prediction[i].className + ": " + prediction[i].probability.toFixed(2);
             labelContainer.childNodes[i].innerHTML = classPrediction;
@@ -89,9 +103,8 @@
     const recordResults = async () => {
         state = States.loading;
         picture = webcam.canvas.toDataURL();
-        console.log("finalCanvas");
-        const prediction = await model.predict(webcam.canvas);
-        cancerPrediction = prediction.find(pred => pred.className.toLowerCase().includes("cancer"));
+        console.log(lastPredictions);
+        cancerPrediction = lastPredictions.reduce((acc, curr) => acc+curr) / (lastPredictions.length);
         if (cancerPrediction) {
             console.log(cancerPrediction);
         } else {
@@ -149,5 +162,5 @@
     </div>
 </div>
 {:else if state === States.result}
-    <Results probability={cancerPrediction.probability} {picture} />
+    <Results probability={cancerPrediction} {picture} />
 {/if}

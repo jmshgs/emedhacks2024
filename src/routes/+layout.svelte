@@ -10,7 +10,7 @@ import ThemeSwitcher from "$lib/components/themeSwitcher.svelte";
 <ModeWatcher/>
 
 
-<div class="h-[10px]">
+<div class="h-[6em]">
 </div>
 
 <div class="animate-appear animate-in fade-in zoom-in w-screen h-screen flex flex-col">

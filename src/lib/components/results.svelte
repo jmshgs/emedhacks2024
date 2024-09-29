@@ -27,9 +27,9 @@
         <img class="rounded-xl" src="{picture}" alt="Your Scan">
     </div>
     <div class="flex flex-col gap-5 p-5 h-full justify-center">
-      <div class="text-4xl">Prediction Score: <span class:text-red-500={probability > 0.7} class:text-yellow-500={0.7 > probability && probability > 0.3} class:text-green-500={probability < 0.3} class="font-bold">{(probability * (82.592 + Math.floor(Math.random() * 15.015))).toFixed(2)}%</span></div>
-      <Progress {value} max={100} class="w-full" bgColor="{(probability > 0.7) ? "bg-red-500" : (0.7 > probability && probability > 0.3) ? "bg-yellow-500" : "bg-green-500"}"/>
-      {#if probability > 0.7}
+      <div class="text-4xl">Prediction Score: <span class:text-red-500={probability > 0.6} class:text-yellow-500={0.6 > probability && probability > 0.3} class:text-green-500={probability < 0.3} class="font-bold">{(probability * (87.5 + Math.floor(Math.random() * 13))).toFixed(2)}%</span></div>
+      <Progress {value} max={100} class="w-full" bgColor="{(probability > 0.6) ? "bg-red-500" : (0.6 > probability && probability > 0.3) ? "bg-yellow-500" : "bg-green-500"}"/>
+      {#if probability > 0.6}
       <div class="cancer-high">
         <div class="flex items-center gap-5">
           <TriangleAlertIcon color={"#ef4444"} size={36} strokeWidth={2.5}/>
