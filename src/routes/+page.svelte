@@ -139,7 +139,7 @@
         </div>
     </header>
 
-    <Tabs.Root value={tabValue} class="px-10 w-full md:w-[33vw] justify-center">
+    <Tabs.Root bind:value={tabValue} class="px-10 w-full md:w-[33vw] justify-center">
         <Tabs.List class="grid w-full grid-cols-2 rounded-lg">
             <Tabs.Trigger on:click={() => {init()}} value="oral">Oral</Tabs.Trigger>
             <Tabs.Trigger on:click={() => {init()}} value="skin">Skin</Tabs.Trigger>
@@ -147,7 +147,7 @@
     </Tabs.Root>
     {#if tabValue === "oral"}
         <p class="text-lg">Take a picture of your mouth, tongue, or lips to scan!</p>
-    {:else if tabValue === "skin"}
+    {:else}
         <p class="text-lg">Take a picture of your skin (arm, leg, face)!</p>
     {/if}
     <div class="flex flex-col items-center justify-center space-y-10">
