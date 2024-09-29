@@ -54,8 +54,22 @@
         // Convenience function to setup a webcam
         const flip = true; // whether to flip the webcam
         webcam = new tmImage.Webcam(400, 400, flip); // width, height, flip
-        await webcam.setup(); // request access to the webcam
-        await webcam.play();
+        while (true) {
+            try {
+                await webcam.setup(); // request access to the webcam
+                break;
+            } catch (error) {
+                console.log("Error: ", error);
+            }
+        }
+        while (true) {
+            try {
+                await webcam.play();
+                break;
+            } catch (error) {
+                console.log("Error: ", error);
+            }
+        }
         window.requestAnimationFrame(loop);
 
         // append elements to the DOM
