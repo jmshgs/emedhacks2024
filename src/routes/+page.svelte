@@ -146,9 +146,9 @@
         </Tabs.List>
     </Tabs.Root>
     {#if tabValue === "oral"}
-        <p class="text-2xl font-bold">Take a picture of your mouth, tongue, or lips to scan!</p>
+        <p class="text-lg">Take a picture of your mouth, tongue, or lips to scan!</p>
     {:else if tabValue === "skin"}
-        <p class="text-2xl font-bold">Take a picture of your skin (arm, leg, face)!</p>
+        <p class="text-lg">Take a picture of your skin (arm, leg, face)!</p>
     {/if}
     <div class="flex flex-col items-center justify-center space-y-10">
         <div id="webcam-container"/>
