@@ -145,6 +145,11 @@
             <Tabs.Trigger on:click={() => {init()}} value="skin">Skin</Tabs.Trigger>
         </Tabs.List>
     </Tabs.Root>
+    {#if tabValue === "oral"}
+        <p class="text-2xl font-bold">Take a picture of your mouth, tongue, or lips to scan!</p>
+    {:else if tabValue === "skin"}
+        <p class="text-2xl font-bold">Take a picture of your skin (arm, leg, face)!</p>
+    {/if}
     <div class="flex flex-col items-center justify-center space-y-10">
         <div id="webcam-container"/>
         <button on:click={recordResults} class="bg-white w-[80px] h-[80px] hover:w-[80px] hover:h-[80px] transition-all rounded-full flex items-center justify-center border-border/75 dark:border-background border-4 hover:border-[6px] hover:border-border">
