@@ -14,7 +14,7 @@ import Sidebar from "$lib/components/sidebar.svelte";
 
 <div class="flex flex-row">
     <Sidebar />
-    <div class="animate-appear animate-in fade-in zoom-in w-screen h-screen flex flex-col pt-[6em] overflow-scroll">
+    <div class="w-screen h-screen flex flex-col md:flex-row pt-[6em] overflow-scroll">
         <slot/>
     </div>
 </div>

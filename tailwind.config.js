@@ -87,10 +87,7 @@ const config = {
 				 slideRight: 'slideRight .5s ease-in-out',
 			}
 		}
-	},
-	plugins: [
-		require("tailwindcss-animate"),
-	],
+	}
 };
 
 export default config;
