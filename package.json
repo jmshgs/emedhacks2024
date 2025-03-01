@@ -25,7 +25,7 @@
     "@sveltejs/adapter-vercel": "^5.4.4",
     "@teachablemachine/image": "^0.8.5",
     "@tensorflow/tfjs": "^4.21.0",
-    "bits-ui": "^0.21.15",
+    "bits-ui": "0.22.0",
     "clsx": "^2.1.1",
     "lucide-svelte": "^0.446.0",
     "mode-watcher": "^0.4.1",

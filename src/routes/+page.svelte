@@ -4,6 +4,7 @@
 
     import * as Tabs from "$lib/components/ui/tabs";
     import { Button } from "$lib/components/ui/button";
+    import { Progress } from "$lib/components/ui/progress";
 
     import { HeartPulseIcon, CameraIcon } from "lucide-svelte";
 	import { onMount } from 'svelte';
@@ -37,8 +38,22 @@
     // the link to your model provided by Teachable Machine export panel
     let URL = "https://teachablemachine.withgoogle.com/models/zw5_O7zeW/";
     $: URL = (tabValue === "oral") ? "https://teachablemachine.withgoogle.com/models/zw5_O7zeW/" : "https://teachablemachine.withgoogle.com/models/wFxhQsBs5/";
-    let model, webcam, labelContainer, maxPredictions;
+    let model, webcam, labelContainer, maxPredictions, changingModel = false;
+    let cancerProbabilty = 0.0;
 
+    async function change() {
+        changingModel = true;
+        const modelURL = URL + "model.json";
+        const metadataURL = URL + "metadata.json";
+        model = await tmImage.load(modelURL, metadataURL);
+        maxPredictions = model.getTotalClasses();
+        console.log("model contents");
+        console.log(model);
+        setTimeout(() => {
+            console.log("timeout over");
+        }, 1000);
+        changingModel = false;
+    }
     // Load the image model and setup the webcam
     async function init() {
         const modelURL = URL + "model.json";
@@ -53,47 +68,53 @@
 
         // Convenience function to setup a webcam
         const flip = true; // whether to flip the webcam
-        webcam = new tmImage.Webcam(400, 400, flip); // width, height, flip
-        while (true) {
-            try {
-                await webcam.setup(); // request access to the webcam
-                break;
-            } catch (error) {
-                console.log("Error: ", error);
+        if (!webcam) {
+            webcam = new tmImage.Webcam(400, 400, flip); // width, height, flip
+            while (true) {
+                try {
+                    await webcam.setup(); // request access to the webcam
+                    break;
+                } catch (error) {
+                    console.log("Error: ", error);
+                }
             }
-        }
-        while (true) {
-            try {
-                await webcam.play();
-                break;
-            } catch (error) {
-                console.log("Error: ", error);
+            while (true) {
+                try {
+                    await webcam.play();
+                    break;
+                } catch (error) {
+                    console.log("Error: ", error);
+                }
             }
-        }
-        window.requestAnimationFrame(loop);
-
-        // append elements to the DOM
-        if (document.getElementById("webcam-container").hasChildNodes()) {
-            document.getElementById("webcam-container").removeChild(document.getElementById("webcam-container").firstChild);
-        }
-        document.getElementById("webcam-container").appendChild(webcam.canvas);
-        webcam.canvas.classList += "rounded-lg shadow-lg shadow-white dark:shadow-black";
-        labelContainer = document.getElementById("label-container");
-        for (let i = 0; i < maxPredictions; i++) { // and class labels
-            labelContainer.appendChild(document.createElement("div"));
+            window.requestAnimationFrame(loop);
+            // append elements to the DOM
+            if (document.getElementById("webcam-container").hasChildNodes()) {
+                document.getElementById("webcam-container").removeChild(document.getElementById("webcam-container").firstChild);
+            }
+            document.getElementById("webcam-container").appendChild(webcam.canvas);
+            webcam.canvas.classList += "rounded-lg shadow-lg shadow-white dark:shadow-black";
+            labelContainer = document.getElementById("label-container");
+            for (let i = 0; i < maxPredictions; i++) { // and class labels
+                labelContainer.appendChild(document.createElement("div"));
+            }
         }
     }
 
     async function loop() {
-        webcam.update(); // update the webcam frame
-    
-        // if (loopCount % 20 === 0) {
-        //     await predict();
-        //     loopCount = 0;
-        // } else {
-        //     loopCount++;
-        // }
-        await predict();
+        if (!changingModel) {
+            if (!webcam) {
+                init();
+            }
+            webcam.update(); // update the webcam frame
+        
+            // if (loopCount % 20 === 0) {
+            //     await predict();
+            //     loopCount = 0
+            // } else {
+            //     loopCount++;
+            // }
+            await predict();
+        }
         window.requestAnimationFrame(loop);
     }
 
@@ -101,16 +122,38 @@
 
     // run the webcam image through the image model
     async function predict() {
-        // predict can take in an image, video or canvas html element
-        const prediction = await model.predict(webcam.canvas);
-        for (let i = 0; i < maxPredictions; i++) {
-            lastPredictions.push(prediction.find(pred => pred.className.toLowerCase().includes("cancer")).probability);
-            if (lastPredictions.length > 80) {
-                lastPredictions.shift();
+        if (!changingModel) {
+            // predict can take in an image, video or canvas html element
+            console.log("changingModel = " + changingModel);
+            console.log(webcam)
+            console.log(model) //prints undefined
+            const prediction = await model.predict(webcam.canvas);
+            console.log("prediction")
+            console.log(prediction)
+            
+            for (let i = 0; i < maxPredictions; i++) {
+                if (!prediction) {
+                    console.log("no prediction")
+                    // lastPredictions.push(prediction.find(pred => pred.className.toLowerCase().includes("cancer")).probability);
+                }
+                if ((prediction.find(pred => pred.className.toLowerCase().includes("cancer")))) {
+                    console.log("prediction cancer successful!")
+                    lastPredictions.push(prediction.find(pred => pred.className.toLowerCase().includes("cancer")).probability);
+                }
+                if ((prediction.find(pred => pred.className.toLowerCase().includes("class 1")))) {
+                    console.log("prediction class 1 successful!")
+                    lastPredictions.push(prediction.find(pred => pred.className.toLowerCase().includes("class 1")).probability);
+                }
+                if (lastPredictions.length > 80) {
+                    lastPredictions.shift();
+                }
+                const classPrediction =
+                    prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+                labelContainer.childNodes[i].innerHTML = classPrediction;
+                if (prediction[i].className.toLowerCase().includes((tabValue == "oral") ? "cancer" : "Class 1")) {
+                    cancerProbabilty = prediction[i].probability;
+                }
             }
-            const classPrediction =
-                prediction[i].className + ": " + prediction[i].probability.toFixed(2);
-            labelContainer.childNodes[i].innerHTML = classPrediction;
         }
     }
     let cancerPrediction;
@@ -124,7 +167,7 @@
         } else {
             console.log("No cancer class found in the predictions.");
         }
-        const randomDelay = Math.floor(Math.random() * (2000 - 1000 + 1)) + 1000;
+        const randomDelay = Math.floor(Math.random() * 1001) + 1000;
         setTimeout(() => {
             state = States.result;
         }, randomDelay);
@@ -141,14 +184,18 @@
 
     <Tabs.Root bind:value={tabValue} class="px-10 w-full md:w-[33vw] justify-center">
         <Tabs.List class="grid w-full grid-cols-2 rounded-lg">
-            <Tabs.Trigger on:click={() => {init()}} value="oral">Oral</Tabs.Trigger>
-            <Tabs.Trigger on:click={() => {init()}} value="skin">Skin</Tabs.Trigger>
+            <Tabs.Trigger on:click={() => {
+                change()
+                }} value="oral">Oral</Tabs.Trigger>
+            <Tabs.Trigger on:click={() => {
+                change()
+                }} value="skin">Skin</Tabs.Trigger>
         </Tabs.List>
     </Tabs.Root>
     {#if tabValue === "oral"}
-        <p class="text-lg">Take a picture of your mouth, tongue, or lips to scan!</p>
+        <p class="text-lg font-medium">Take a picture of your mouth, tongue, or lips to scan!</p>
     {:else}
-        <p class="text-lg">Take a picture of your skin (arm, leg, face)!</p>
+        <p class="text-lg font-medium">Take a picture of your skin (arm, leg, face)!</p>
     {/if}
     <div class="flex flex-col items-center justify-center space-y-10">
         <div id="webcam-container"/>
@@ -157,6 +204,10 @@
             <div class="bg-white w-[55px] h-[55px] rounded-full border-[3px] flex" class:border-gray-200={($mode=="light")}></div>
         </button>
         <div id="label-container"/>
+        <input type="file" accept="image/*" class="w-[200px]">
+        <Progress {cancerProbabilty} max={0.5} class="w-[80%]" />
+
+        
     </div>
 </div>
 {:else if state === States.loading}
