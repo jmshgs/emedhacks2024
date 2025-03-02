@@ -12,10 +12,12 @@
     import Results from '$lib/components/results.svelte';
 
     import { toggleMode, mode } from "mode-watcher";
+    //import { }
 
     let tabValue = "oral";
 
     import { slide } from 'svelte/transition';
+	import { SupabaseAuthClient } from '@supabase/supabase-js/dist/module/lib/SupabaseAuthClient';
     
     onMount(() => {
         init();
@@ -171,6 +173,7 @@
         setTimeout(() => {
             state = States.result;
         }, randomDelay);
+
     }
 </script>
 
@@ -213,8 +216,8 @@
 {:else if state === States.loading}
 <div class="flex flex-col w-full min-h-screen items-center space-y-5 animate-out slide-out-to-top slide-out-to-left">
     <header class="w-full py-6">
-        <div class="flex mx-auto justify-center items-center gap-5">
-            <h1 class="text-5xl font-bold">OncoVision</h1>
+        <div class="flex flex-col mx-auto justify-center items-center gap-5">
+            <h1 class="text-5xl font-bold">Onco</h1><h1><span class="text-blue-500 dark:text-blue-600">Vision</span></h1>
         </div>
     </header>
     <div class="flex flex-col items-center justify-center space-y-10">

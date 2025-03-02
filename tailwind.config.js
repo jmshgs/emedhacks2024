@@ -87,7 +87,7 @@ const config = {
 				 slideRight: 'slideRight .5s ease-in-out',
 			}
 		}
-	}
+	}  
 };
 
 export default config;

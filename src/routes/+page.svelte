@@ -32,13 +32,13 @@
       Onco<span class="text-blue-500 dark:text-blue-600">Vision</span>
     </div>
     <p class="mb-8 text-lg font-normal text-gray-700 dark:text-gray-300 lg:text-xl sm:px-16 lg:px-48">
-      The convenient machine learning solution to detect signs of cancer earlier.
+      The convenient machine learning solution to detect early signs of cancer.
     </p>
   
     <div class="flex flex-col lg:gap-5 space-y-5 sm:flex-row sm:justify-center sm:space-y-0">
       <Button href="/app" class="bg-blue-500 dark:bg-blue-600 h-12 space-x-3" >
         <p>Scan using your camera</p>
-        <CameraIcon size={20}/>
+        <CameraIcon />
       </Button>
     </div>
   </div>
