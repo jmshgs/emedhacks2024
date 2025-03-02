@@ -12,12 +12,12 @@
     import Results from '$lib/components/results.svelte';
 
     import { toggleMode, mode } from "mode-watcher";
-    //import { }
+    import { insertData } from '$lib/supabase';
 
     let tabValue = "oral";
 
     import { slide } from 'svelte/transition';
-	import { SupabaseAuthClient } from '@supabase/supabase-js/dist/module/lib/SupabaseAuthClient';
+
     
     onMount(() => {
         init();
@@ -173,7 +173,7 @@
         setTimeout(() => {
             state = States.result;
         }, randomDelay);
-
+        await insertData(cancerPrediction, tabValue);
     }
 </script>
 
@@ -208,7 +208,7 @@
         </button>
         <div id="label-container"/>
         <!-- <input type="file" accept="image/*" class="w-[200px]"> -->
-        <Progress {cancerProbabilty} max={0.5} class="w-[80%]" />
+        <!-- <Progress {cancerProbabilty} max={0.5} class="w-[80%]" /> -->
 
         
     </div>
